@@ -90,10 +90,18 @@
             {{ m.score }}%
         </div>
 
+        {% if m.status == "pending" %}
+            <span style="color:#f0ad4e;font-weight:600;">Request Sent</span>
+        {% elif m.status == "accepted" %}
+            <span style="color:#28a745;font-weight:600;">Accepted</span>
+        {% elif m.status == "rejected" %}
+            <span style="color:#dc3545;font-weight:600;">Rejected</span>
+        {% else %}
         <form action="{% url 'request_mentor' m.mentor.id %}" method="post">
             {% csrf_token %}
             <button class="request-btn">Request Mentor</button>
         </form>
+        {% endif %}
     </div>
     {% empty %}
     <p style="text-align:center;">No mentors found.</p>

@@ -57,6 +57,10 @@ class MentorRequest(models.Model):
 
     class Meta:
         unique_together = ("mentee", "mentor")
+        indexes = [
+            models.Index(fields=["mentor", "status"]),
+            models.Index(fields=["mentee", "status"]),
+        ]
 
     def __str__(self):
         return f"{self.mentee.user.email} → {self.mentor.user.email}"

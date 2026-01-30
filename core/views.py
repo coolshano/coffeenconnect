@@ -19,15 +19,19 @@ def test_match(request):
     return HttpResponse(
         "<br>".join([f"{m.user.username}: {score:.2f}" for m, score in matches])
     )
-class UserLoginView(LoginView):
-    template_name = 'login.html'
-    redirect_authenticated_user = False
 
+class UserLoginView(LoginView):
+    template_name = "login.html"
+
+    def get_success_url(self):
+        if hasattr(self.request.user, "mentor"):
+            return "/mentor/dashboard/"
+        else:
+            return "/dashboard/"
 
 @login_required(login_url='/login/')
 def dashboard(request):
     return HttpResponse("Welcome to your dashboard")
-
 
 def register(request):
     if request.method == "POST":
@@ -53,7 +57,7 @@ def register(request):
 @login_required(login_url="/login/")
 def mentor_profile(request):
     mentor = request.user.mentor   
-    
+
     if request.method == "POST":
         form = MentorProfileForm(request.POST, request.FILES, instance=mentor)
         if form.is_valid():
@@ -63,7 +67,6 @@ def mentor_profile(request):
         form = MentorProfileForm(instance=mentor)
 
     return render(request, "mentor_profile.html", {"form": form})
-
 
 @login_required(login_url="/login/")
 def mentee_profile(request):
@@ -79,24 +82,24 @@ def mentee_profile(request):
 
     return render(request, "mentee_profile.html", {"form": form})
 
-
-
-@login_required(login_url="/login/")
+@login_required
 def matches(request):
-    mentee = Mentee.objects.get(user=request.user)
+    mentee = request.user.mentee
 
     raw = match_mentors(mentee)
 
-    matches = [
-        {
+    requests = MentorRequest.objects.filter(mentee=mentee)
+    req_map = {r.mentor_id: r.status for r in requests}
+
+    matches = []
+    for mentor, score in raw:
+        matches.append({
             "mentor": mentor,
-            "score": round(score * 100, 1)
-        }
-        for mentor, score in raw
-    ]
+            "score": round(score * 100, 1),
+            "status": req_map.get(mentor.id)  # None, pending, accepted, rejected
+        })
 
     return render(request, "matches.html", {"matches": matches})
-
 
 from .models import MentorRequest
 
@@ -111,4 +114,41 @@ def request_mentor(request, mentor_id):
     )
 
     return redirect("/matches/")
+
+@login_required(login_url="/login/")
+def accept_request(request, request_id):
+    r = MentorRequest.objects.get(id=request_id)
+    r.status = "accepted"
+    r.save()
+    return redirect("/mentor/dashboard/")
+
+@login_required(login_url="/login/")
+def reject_request(request, request_id):
+    r = MentorRequest.objects.get(id=request_id)
+    r.status = "rejected"
+    r.save()
+    return redirect("/mentor/dashboard/")
+
+
+@login_required(login_url="/login/")
+def reject_request(request, request_id):
+    r = MentorRequest.objects.get(id=request_id)
+    r.status = "rejected"
+    r.save()
+    return redirect("/mentor/dashboard/")
+
+@login_required(login_url="/login/")
+def mentor_dashboard(request):
+    mentor = request.user.mentor
+
+    requests = MentorRequest.objects.filter(
+        mentor=mentor,
+        status="pending"
+    )
+
+    return render(request, "mentor_dashboard.html", {
+        "mentor": mentor,
+        "requests": requests
+    })
+
 

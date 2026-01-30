@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mentor Dashboard</title>
+
+<style>
+body {
+    font-family: "Segoe UI", system-ui;
+    background: #f4f6f9;
+    margin: 0;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 40px 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.profile {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.profile img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile h2 {
+    margin: 0;
+}
+
+.edit-btn {
+    background: #0d6efd;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.section {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.request-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding: 20px 0;
+}
+
+.request-card:last-child {
+    border-bottom: none;
+}
+
+.actions button {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.accept {
+    background: #28a745;
+    color: white;
+}
+
+.reject {
+    background: #dc3545;
+    color: white;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- Mentor Profile -->
+<div class="header">
+    <div class="profile">
+        {% if mentor.profile_image %}
+            <img src="{{ mentor.profile_image.url }}">
+        {% else %}
+            <img src="{% static 'core/images/default-avatar.png' %}">
+        {% endif %}
+        <div>
+            <h2>{{ mentor.name }}</h2>
+            <p>Mentor</p>
+        </div>
+    </div>
+
+    <a href="/mentor/profile/">
+        <button class="edit-btn">Edit Profile</button>
+    </a>
+</div>
+
+<!-- Requests -->
+<div class="section">
+<h3>Mentorship Requests</h3>
+
+{% for r in requests %}
+<div class="request-card">
+    <div>
+        <b>{{ r.mentee.user.email }}</b><br>
+        {{ r.mentee.profile_text|truncatewords:20 }}
+    </div>
+
+    <div class="actions">
+        <form method="post" action="/accept-request/{{ r.id }}/">
+            {% csrf_token %}
+            <button class="accept">Accept</button>
+        </form>
+
+        <form method="post" action="/reject-request/{{ r.id }}/">
+            {% csrf_token %}
+            <button class="reject">Reject</button>
+        </form>
+    </div>
+</div>
+{% empty %}
+<p>No mentorship requests yet.</p>
+{% endfor %}
+
+</div>
+
+</div>
+</body>
+</html>
