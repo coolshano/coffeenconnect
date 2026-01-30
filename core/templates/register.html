@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Account | Conect Me</title>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            font-family: "Segoe UI", system-ui, sans-serif;
+            background: linear-gradient(135deg, #0d6efd, #ff9800);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            background: #ffffff;
+            width: 420px;
+            padding: 32px;
+            border-radius: 14px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        .login-card img {
+            width: 160px;
+            max-width: 100%;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            margin-bottom: 22px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #0d6efd;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 18px;
+            border: none;
+            border-radius: 8px;
+            background: #0d6efd;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #0b5ed7;
+        }
+
+        .footer-text {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #777;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                width: 90%;
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <img src="{% static 'core/images/logo.png' %}" alt="Conect Me Logo">
+
+    <h2>Create Account</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="text" name="phone_number" placeholder="Phone Number" required>
+
+        <select name="role" required>
+            <option value="">Register as...</option>
+            <option value="mentee">Mentee</option>
+            <option value="mentor">Mentor</option>
+        </select>
+
+        <input type="password" name="password1" placeholder="Password" required>
+        <input type="password" name="password2" placeholder="Confirm Password" required>
+
+        <button type="submit">Create Account</button>
+    </form>
+
+    <div class="footer-text">
+        Join Professionals & Opportunities
+    </div>
+</div>
+
+</body>
+</html>

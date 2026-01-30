@@ -1,0 +1,30 @@
+import openai
+import numpy as np
+from .models import Mentor
+from django.conf import settings
+
+openai.api_key = settings.OPENAI_API_KEY
+
+def get_embedding(text):
+    res = openai.embeddings.create(
+        model="text-embedding-3-large",
+        input=text
+    )
+    return res.data[0].embedding
+
+
+def cosine(a, b):
+    a = np.array(a)
+    b = np.array(b)
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+
+def match_mentors(mentee):
+    results = []
+
+    for mentor in Mentor.objects.exclude(embedding=None):
+        score = cosine(mentee.embedding, mentor.embedding)
+        results.append((mentor, score))
+
+    results.sort(key=lambda x: x[1], reverse=True)
+    return results[:10]

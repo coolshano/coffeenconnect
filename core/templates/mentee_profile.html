@@ -1,0 +1,7 @@
+<h2>Mentee Profile</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.profile_text }}
+    <button type="submit">Save Profile</button>
+</form>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Matches</title>
+
+    <style>
+        body {
+            font-family: "Segoe UI", system-ui, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .mentor-info {
+            flex: 1;
+        }
+
+        .mentor-info h3 {
+            margin: 0;
+            color: #0d6efd;
+        }
+
+        .mentor-info p {
+            margin: 6px 0;
+            color: #555;
+        }
+
+        .score {
+            font-size: 22px;
+            font-weight: bold;
+            color: #28a745;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .request-btn {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            border: none;
+            padding: 12px 18px;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .request-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(40,167,69,0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Your Best Mentor Matches</h1>
+
+    {% for m in matches %}
+    <div class="card">
+        <div class="mentor-info">
+            <h3>{{ m.mentor.user.email }}</h3>
+            <p>{{ m.mentor.profile_text|truncatewords:20 }}</p>
+        </div>
+
+        <div class="score">
+            {{ m.score }}%
+        </div>
+
+        <form action="{% url 'request_mentor' m.mentor.id %}" method="post">
+            {% csrf_token %}
+            <button class="request-btn">Request Mentor</button>
+        </form>
+    </div>
+    {% empty %}
+    <p style="text-align:center;">No mentors found.</p>
+    {% endfor %}
+</div>
+
+</body>
+</html>

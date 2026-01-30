@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mentor Profile</title>
+
+<style>
+body {
+    font-family: "Segoe UI", system-ui;
+    background: #f4f6f9;
+    margin: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 40px 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.profile-header {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.profile-header img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-header h2 {
+    margin: 0;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-top: 15px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+button {
+    margin-top: 20px;
+    background: #0d6efd;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.change-password {
+    margin-top: 20px;
+    display: block;
+    text-align: center;
+    color: #0d6efd;
+    font-weight: 600;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<div class="card">
+
+<div class="profile-header">
+    {% if form.instance.profile_image %}
+        <img src="{{ form.instance.profile_image.url }}">
+    {% else %}
+        <img src="{% static 'core/images/default-avatar.png' %}">
+    {% endif %}
+    <div>
+        <h2>{{ request.instance.name }}</h2>
+        <p>Mentor</p>
+    </div>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <label>Full Name</label>
+    {{ form.name }}
+
+    <label>About You</label>
+    {{ form.profile_text }}
+
+    <label>Profile Photo</label>
+    {% if form.instance.profile_image %}
+        <img src="{{ form.instance.profile_image.url }}" style="width:90px;height:90px;border-radius:50%;margin-bottom:10px;">
+    {% endif %}
+    <input type="file" name="profile_image">
+
+    <label>LinkedIn</label>
+    {{ form.linkedin }}
+
+    <label>GitHub</label>
+    {{ form.github }}
+
+    <label>CV</label>
+    {% if form.instance.cv %}
+        <a href="{{ form.instance.cv.url }}" target="_blank" style="color:#0d6efd;font-weight:600;display:block;margin-bottom:8px;">
+            View current CV
+        </a>
+    {% endif %}
+    <input type="file" name="cv">
+
+    <button type="submit">Save Profile</button>
+</form>
+
+
+<a href="/accounts/password_change/" class="change-password">Change Password</a>
+
+</div>
+</div>
+
+</body>
+</html>
