@@ -24,17 +24,26 @@ class RegisterForm(UserCreationForm):
             "password2",
         ]
 
+    def clean_email(self):
+        email = self.cleaned_data["email"].lower()
+
+        if User.objects.filter(username=email).exists():
+            raise forms.ValidationError("An account with this email already exists.")
+
+        return email
+
     def save(self, commit=True):
         user = super().save(commit=False)
 
         # Email is username
-        user.username = self.cleaned_data["email"]
-        user.email = self.cleaned_data["email"]
+        user.username = self.cleaned_data["email"].lower()
+        user.email = self.cleaned_data["email"].lower()
 
         if commit:
             user.save()
 
         return user
+
     
 
 

@@ -62,7 +62,7 @@ def mentor_profile(request):
         form = MentorProfileForm(request.POST, request.FILES, instance=mentor)
         if form.is_valid():
             form.save()
-            return redirect("/dashboard/")
+            return redirect("/mentor/dashboard/")
     else:
         form = MentorProfileForm(instance=mentor)
 
@@ -121,14 +121,6 @@ def accept_request(request, request_id):
     r.status = "accepted"
     r.save()
     return redirect("/mentor/dashboard/")
-
-@login_required(login_url="/login/")
-def reject_request(request, request_id):
-    r = MentorRequest.objects.get(id=request_id)
-    r.status = "rejected"
-    r.save()
-    return redirect("/mentor/dashboard/")
-
 
 @login_required(login_url="/login/")
 def reject_request(request, request_id):
