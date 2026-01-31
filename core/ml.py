@@ -7,17 +7,26 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 def get_embedding(text):
     return model.encode(text).tolist()
 
-def cosine(a, b):
+
+def cosine_similarity(a, b):
+    if not a or not b:
+        return 0
+
     a = np.array(a)
     b = np.array(b)
-    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
+
 
 def match_mentors(mentee):
+    field = mentee.user.userprofile.interested_field
+
+    mentors = Mentor.objects.filter(interested_field=field)
+
     results = []
+    for mentor in mentors:
+        if mentor.embedding and mentee.embedding:
+            score = cosine_similarity(mentee.embedding, mentor.embedding)
+            results.append((mentor, score))
 
-    for mentor in Mentor.objects.exclude(embedding=None):
-        score = cosine(mentee.embedding, mentor.embedding)
-        results.append((mentor, score))
-
-    results.sort(key=lambda x: x[1], reverse=True)
-    return results[:10]
+    return sorted(results, key=lambda x: x[1], reverse=True)

@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import register, UserLoginView, dashboard, mentor_profile, mentee_profile, test_match, matches, request_mentor
+from .views import register, UserLoginView, dashboard, mentor_profile, mentee_profile, test_match, matches, request_mentor, mentee_dashboard
 from .views import (
     mentor_dashboard,
     accept_request,
     reject_request,
 )
+from django.contrib.auth.views import LogoutView
 
 
 urlpatterns = [
@@ -19,5 +20,8 @@ urlpatterns = [
     path("mentor/dashboard/", mentor_dashboard),
     path("accept-request/<int:request_id>/", accept_request),
     path("reject-request/<int:request_id>/", reject_request),
+    path("mentee/dashboard/", mentee_dashboard, name="mentee_dashboard"),
+    path("logout/", LogoutView.as_view(next_page="/login/"), name="logout"),
+
 
 ]

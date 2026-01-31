@@ -1,112 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Your Matches</title>
+<title>Your Matches</title>
 
-    <style>
-        body {
-            font-family: "Segoe UI", system-ui, sans-serif;
-            background: #f4f6f9;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+body {
+    font-family: "Segoe UI", system-ui;
+    background: #f4f6f9;
+    margin: 0;
+}
 
-        .container {
-            max-width: 900px;
-            margin: auto;
-            padding: 40px 20px;
-        }
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 40px 20px;
+}
 
-        h1 {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+.card {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
 
-        .card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-        }
+.avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+}
 
-        .mentor-info {
-            flex: 1;
-        }
+.info {
+    flex: 1;
+}
 
-        .mentor-info h3 {
-            margin: 0;
-            color: #0d6efd;
-        }
+.info h3 {
+    margin: 0;
+}
 
-        .mentor-info p {
-            margin: 6px 0;
-            color: #555;
-        }
+.score {
+    font-size: 22px;
+    font-weight: bold;
+    color: #28a745;
+}
 
-        .score {
-            font-size: 22px;
-            font-weight: bold;
-            color: #28a745;
-            min-width: 80px;
-            text-align: center;
-        }
-
-        .request-btn {
-            background: linear-gradient(135deg, #28a745, #1e7e34);
-            border: none;
-            padding: 12px 18px;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            white-space: nowrap;
-            transition: transform 0.1s ease, box-shadow 0.1s ease;
-        }
-
-        .request-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 15px rgba(40,167,69,0.3);
-        }
-    </style>
+.request-btn {
+    background: #0d6efd;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+</style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Your Best Mentor Matches</h1>
+<h2>Your Best Mentor Matches</h2>
 
-    {% for m in matches %}
-    <div class="card">
-        <div class="mentor-info">
-            <h3>{{ m.mentor.user.email }}</h3>
-            <p>{{ m.mentor.profile_text|truncatewords:20 }}</p>
-        </div>
+{% for m in matches %}
+<div class="card">
 
-        <div class="score">
-            {{ m.score }}%
-        </div>
+    {% if m.mentor.profile_image %}
+        <img src="{{ m.mentor.profile_image.url }}" class="avatar">
+    {% else %}
+        <img src="/static/core/images/default-avatar.png" class="avatar">
+    {% endif %}
 
-        {% if m.status == "pending" %}
-            <span style="color:#f0ad4e;font-weight:600;">Request Sent</span>
-        {% elif m.status == "accepted" %}
-            <span style="color:#28a745;font-weight:600;">Accepted</span>
-        {% elif m.status == "rejected" %}
-            <span style="color:#dc3545;font-weight:600;">Rejected</span>
-        {% else %}
-        <form action="{% url 'request_mentor' m.mentor.id %}" method="post">
+    <div class="info">
+        <h3>{{ m.mentor.name }}</h3>
+        <p>{{ m.mentor.profile_text|truncatewords:20 }}</p>
+    </div>
+
+    <div class="score">{{ m.score }}%</div>
+
+    {% if m.status == "pending" %}
+        <span style="color:#f0ad4e;font-weight:600;">Request Sent</span>
+    {% elif m.status == "accepted" %}
+        <span style="color:#28a745;font-weight:600;">Accepted</span>
+    {% elif m.status == "rejected" %}
+        <span style="color:#dc3545;font-weight:600;">Rejected</span>
+    {% else %}
+        <form method="post" action="/request-mentor/{{ m.mentor.id }}/">
             {% csrf_token %}
             <button class="request-btn">Request Mentor</button>
         </form>
-        {% endif %}
-    </div>
-    {% empty %}
-    <p style="text-align:center;">No mentors found.</p>
-    {% endfor %}
-</div>
+    {% endif %}
 
+</div>
+{% empty %}
+<p>No mentors found.</p>
+{% endfor %}
+
+</div>
 </body>
 </html>

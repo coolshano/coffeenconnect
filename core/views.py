@@ -20,14 +20,22 @@ def test_match(request):
         "<br>".join([f"{m.user.username}: {score:.2f}" for m, score in matches])
     )
 
+
 class UserLoginView(LoginView):
     template_name = "login.html"
 
     def get_success_url(self):
-        if hasattr(self.request.user, "mentor"):
+        user = self.request.user
+
+        profile, _ = UserProfile.objects.get_or_create(
+            user=user,
+            defaults={"role": "mentee"}
+        )
+
+        if profile.role == "mentor":
             return "/mentor/dashboard/"
         else:
-            return "/dashboard/"
+            return "/mentee/dashboard/"
 
 @login_required(login_url='/login/')
 def dashboard(request):
@@ -38,21 +46,30 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
+
             role = form.cleaned_data["role"]
+            interested_field = form.cleaned_data["interested_field"]
 
-            # 🔐 LOGIN the new user
-            login(request, user)
+            # Update existing profile created by signal
+            profile = user.userprofile
+            profile.role = role
+            profile.interested_field = interested_field
+            profile.save()
 
+            # Create role object
             if role == "mentor":
-                Mentor.objects.create(user=user, profile_text="")
+                Mentor.objects.get_or_create(user=user)
+                login(request, user)
                 return redirect("/mentor/profile/")
             else:
-                Mentee.objects.create(user=user, profile_text="")
+                Mentee.objects.get_or_create(user=user)
+                login(request, user)
                 return redirect("/mentee/profile/")
     else:
         form = RegisterForm()
 
     return render(request, "register.html", {"form": form})
+
 
 @login_required(login_url="/login/")
 def mentor_profile(request):
@@ -70,24 +87,35 @@ def mentor_profile(request):
 
 @login_required(login_url="/login/")
 def mentee_profile(request):
-    mentee = request.user.mentee
+    mentee, _ = Mentee.objects.get_or_create(user=request.user)
 
     if request.method == "POST":
-        form = MenteeProfileForm(request.POST, instance=mentee)
+        form = MenteeProfileForm(request.POST, request.FILES, instance=mentee)
         if form.is_valid():
             form.save()
-            return redirect("/dashboard/")
+            return redirect("/mentee/dashboard/")
     else:
         form = MenteeProfileForm(instance=mentee)
 
     return render(request, "mentee_profile.html", {"form": form})
 
+
 @login_required
 def matches(request):
-    mentee = request.user.mentee
+    # Ensure user is a mentee
+    try:
+        mentee = request.user.mentee
+    except:
+        return redirect("/dashboard/")
 
+    # Enforce completed profile
+    if not mentee.profile_text or not mentee.cv:
+        return redirect("/mentee/profile/")
+
+    # Run AI matching
     raw = match_mentors(mentee)
 
+    # Fetch existing requests
     requests = MentorRequest.objects.filter(mentee=mentee)
     req_map = {r.mentor_id: r.status for r in requests}
 
@@ -100,6 +128,7 @@ def matches(request):
         })
 
     return render(request, "matches.html", {"matches": matches})
+
 
 from .models import MentorRequest
 
@@ -142,5 +171,30 @@ def mentor_dashboard(request):
         "mentor": mentor,
         "requests": requests
     })
+
+
+@login_required
+def mentee_dashboard(request):
+    mentee, _ = Mentee.objects.get_or_create(user=request.user)
+    # get ML matches
+    raw_matches = match_mentors(mentee)
+
+    # existing requests
+    requests = MentorRequest.objects.filter(mentee=mentee)
+    req_map = {r.mentor_id: r.status for r in requests}
+
+    mentors = []
+    for mentor, score in raw_matches:
+        mentors.append({
+            "mentor": mentor,
+            "score": round(score * 100, 1),
+            "status": req_map.get(mentor.id)  # None / pending / accepted
+        })
+
+    return render(request, "mentee_dashboard.html", {
+        "mentee": mentee,
+        "mentors": mentors
+    })
+
 
 

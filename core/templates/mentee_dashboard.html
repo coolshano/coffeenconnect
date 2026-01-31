@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mentee Dashboard</title>
+
+<style>
+body {
+    font-family: "Segoe UI", system-ui;
+    background:#f4f6f9;
+    margin:0;
+}
+
+.layout {
+    display:grid;
+    grid-template-columns: 300px 1fr;
+    max-width:1200px;
+    margin:auto;
+    gap:30px;
+    padding:40px;
+}
+
+/* LEFT PANEL */
+.profile {
+    background:white;
+    border-radius:16px;
+    padding:25px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    text-align:center;
+}
+
+.profile img {
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-bottom:10px;
+}
+
+.profile h2 { margin:5px 0; }
+
+.edit-btn {
+    display:inline-block;
+    margin-top:15px;
+    background:#0d6efd;
+    color:white;
+    padding:10px 18px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:600;
+}
+
+/* RIGHT PANEL */
+.matches h1 { margin-bottom:20px; }
+
+.card {
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.mentor h3 { margin:0; color:#0d6efd; }
+
+.score {
+    font-size:20px;
+    font-weight:700;
+    color:#28a745;
+}
+
+.btn {
+    background:#28a745;
+    color:white;
+    border:none;
+    padding:10px 16px;
+    border-radius:8px;
+    cursor:pointer;
+}
+.logout-btn {
+    margin-top: 14px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+}
+
+.logout-btn:hover {
+    background: #c82333;
+}
+
+
+.pending { background:#ffc107; color:black; }
+.accepted { background:#0d6efd; }
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+<!-- LEFT PROFILE -->
+<div class="profile">
+    {% if mentee.profile_image %}
+        <img src="{{ mentee.profile_image.url }}">
+    {% else %}
+        <img src="{% static 'core/images/default-avatar.png' %}">
+    {% endif %}
+
+    <h2>{{ mentee.name}}</h2>
+    <h4>{{ mentee.country }}</h4>
+
+    <a href="/mentee/profile/" class="edit-btn">Edit Profile</a>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+    <button class="logout-btn">Logout</button>
+</form>
+
+</div>
+
+<!-- RIGHT MATCHES -->
+<div class="matches">
+    <h1>Your Mentor Matches</h1>
+
+    {% for m in mentors %}
+    <div class="card">
+        <div class="mentor">
+            <h3>{{ m.mentor.name }}</h3>
+            <p style="color:#777">{{ mentee.country }}</p>
+            <p>{{ m.mentor.profile_text|truncatewords:18 }}</p>
+        </div>
+
+        <div class="score">{{ m.score }}%</div>
+
+        {% if m.status == "pending" %}
+            <button class="btn pending">Pending</button>
+        {% elif m.status == "accepted" %}
+            <button class="btn accepted">Connected</button>
+        {% else %}
+            <form method="post" action="{% url 'request_mentor' m.mentor.id %}">
+                {% csrf_token %}
+                <button class="btn">Request</button>
+            </form>
+        {% endif %}
+    </div>
+    {% empty %}
+        <p>No mentors found yet.</p>
+    {% endfor %}
+</div>
+
+</div>
+
+</body>
+</html>

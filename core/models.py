@@ -11,19 +11,10 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    interested_field = models.CharField(max_length=120)
 
     def __str__(self):
         return f"{self.user.email} ({self.role})"
-    
-
-class Mentee(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="mentee")
-    profile_text = models.TextField()
-    embedding = models.JSONField(null=True, blank=True)
-    linkedin = models.URLField(blank=True, null=True)
-    cv = models.FileField(upload_to="cvs/", blank=True, null=True)
-
-
 
 
 class Mentor(models.Model):
@@ -33,14 +24,41 @@ class Mentor(models.Model):
 
     profile_text = models.TextField()
     embedding = models.JSONField(null=True, blank=True)
+    interested_field = models.CharField(max_length=120)
 
-    profile_image = models.ImageField(upload_to="profiles/", blank=True, null=True)
     linkedin = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
     cv = models.FileField(upload_to="cvs/", blank=True, null=True)
+    profile_image = models.ImageField(upload_to="profiles/", blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        from .ml import get_embedding
+
+        # Only generate embedding if profile_text changed or embedding is missing
+        if self.profile_text and (not self.embedding or self.pk is None):
+            self.embedding = get_embedding(self.profile_text)
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name or self.user.email
+
+
+class Mentee(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="mentee")
+    name = models.CharField(max_length=120)
+    country = models.CharField(max_length=80)
+    profile_text = models.TextField()
+    embedding = models.JSONField(null=True, blank=True)
+
+    linkedin = models.URLField(blank=True, null=True)
+    github = models.URLField(blank=True, null=True)
+
+    cv = models.FileField(upload_to="cvs/")   # REQUIRED
+    profile_image = models.ImageField(upload_to="profiles/", blank=True, null=True)
+
+    def __str__(self):
+        return self.user.email
 
 
 class MentorRequest(models.Model):
@@ -52,6 +70,7 @@ class MentorRequest(models.Model):
 
     mentee = models.ForeignKey(Mentee, on_delete=models.CASCADE)
     mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE)
+
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
 

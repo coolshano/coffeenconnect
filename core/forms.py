@@ -2,6 +2,15 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Mentor, Mentee
+from .widget import CleanFileInput
+
+INTERESTED_FIELD_CHOICES = [
+    ("psychology", "Psychology"),
+    ("medical", "Medical"),
+    ("technology", "Technology"),
+]
+
+
 
 class RegisterForm(UserCreationForm):
 
@@ -12,6 +21,12 @@ class RegisterForm(UserCreationForm):
 
     email = forms.EmailField(required=True)
     phone_number = forms.CharField(max_length=15)
+
+    interested_field = forms.ChoiceField(
+        choices=INTERESTED_FIELD_CHOICES,
+        widget=forms.Select(attrs={"class": "form-control"})
+    )
+
     role = forms.ChoiceField(choices=ROLE_CHOICES)
 
     class Meta:
@@ -19,25 +34,16 @@ class RegisterForm(UserCreationForm):
         fields = [
             "email",
             "phone_number",
+            "interested_field",
             "role",
             "password1",
             "password2",
         ]
 
-    def clean_email(self):
-        email = self.cleaned_data["email"].lower()
-
-        if User.objects.filter(username=email).exists():
-            raise forms.ValidationError("An account with this email already exists.")
-
-        return email
-
     def save(self, commit=True):
         user = super().save(commit=False)
-
-        # Email is username
-        user.username = self.cleaned_data["email"].lower()
-        user.email = self.cleaned_data["email"].lower()
+        user.username = self.cleaned_data["email"]
+        user.email = self.cleaned_data["email"]
 
         if commit:
             user.save()
@@ -53,6 +59,7 @@ class MentorProfileForm(forms.ModelForm):
         fields = [
             "name",
             "profile_text",
+            "interested_field", 
             "profile_image",
             "linkedin",
             "github",
@@ -90,11 +97,46 @@ class MentorProfileForm(forms.ModelForm):
 class MenteeProfileForm(forms.ModelForm):
     class Meta:
         model = Mentee
-        fields = ["profile_text"]
+        fields = [
+            "name",
+            "country",
+            "profile_text",
+            "profile_image",
+            "linkedin",
+            "github",
+            "cv",
+        ]
 
         widgets = {
+            "name": forms.TextInput(attrs={
+                "placeholder": "Your full name"
+            }),
+
+            "country": forms.TextInput(attrs={
+                "placeholder": "Your country"
+            }),
+
             "profile_text": forms.Textarea(attrs={
-                "placeholder": "Describe your goals, background, and what help you want...",
+                "placeholder": "Describe your background, goals, and what you want to learn...",
                 "rows": 6
-            })
+            }),
+
+            # 🔥 This removes the URLs, Clear checkbox, etc
+            "profile_image": forms.FileInput(attrs={
+                "class": "file-input"
+            }),
+
+            "cv": forms.FileInput(attrs={
+                "class": "file-input"
+            }),
+
+            "linkedin": forms.URLInput(attrs={
+                "placeholder": "LinkedIn profile (optional)"
+            }),
+
+            "github": forms.URLInput(attrs={
+                "placeholder": "GitHub profile (optional)"
+            }),
         }
+
+
