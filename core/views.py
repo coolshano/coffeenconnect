@@ -48,27 +48,29 @@ def register(request):
             user = form.save()
 
             role = form.cleaned_data["role"]
-            interested_field = form.cleaned_data["interested_field"]
+            interested = form.cleaned_data["interested_field"]
 
-            # Update existing profile created by signal
-            profile = user.userprofile
-            profile.role = role
-            profile.interested_field = interested_field
-            profile.save()
+            # Update the auto-created profile
+            UserProfile.objects.filter(user=user).update(
+                phone_number=form.cleaned_data["phone_number"],
+                role=role,
+                interested_field=interested
+            )
 
-            # Create role object
+            login(request, user)
+
             if role == "mentor":
-                Mentor.objects.get_or_create(user=user)
-                login(request, user)
+                Mentor.objects.create(user=user, profile_text="")
                 return redirect("/mentor/profile/")
             else:
-                Mentee.objects.get_or_create(user=user)
-                login(request, user)
+                Mentee.objects.create(user=user, profile_text="")
                 return redirect("/mentee/profile/")
     else:
         form = RegisterForm()
 
     return render(request, "register.html", {"form": form})
+
+
 
 
 @login_required(login_url="/login/")

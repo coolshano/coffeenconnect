@@ -19,6 +19,15 @@ class RegisterForm(UserCreationForm):
         ("mentor", "Mentor"),
     ]
 
+    FIELD_CHOICES = [
+        ("Psychology", "Psychology"),
+        ("Medical", "Medical"),
+        ("Technology", "Technology"),
+    ]
+
+    interested_field = forms.ChoiceField(choices=FIELD_CHOICES)
+
+
     email = forms.EmailField(required=True)
     phone_number = forms.CharField(max_length=15)
 
@@ -40,10 +49,20 @@ class RegisterForm(UserCreationForm):
             "password2",
         ]
 
+    def clean_email(self):
+        email = self.cleaned_data["email"].lower()
+
+        if User.objects.filter(username=email).exists():
+            raise forms.ValidationError("This email is already registered.")
+
+        return email
+
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.username = self.cleaned_data["email"]
-        user.email = self.cleaned_data["email"]
+
+        email = self.cleaned_data["email"].lower()
+        user.username = email
+        user.email = email
 
         if commit:
             user.save()
@@ -59,7 +78,6 @@ class MentorProfileForm(forms.ModelForm):
         fields = [
             "name",
             "profile_text",
-            "interested_field", 
             "profile_image",
             "linkedin",
             "github",

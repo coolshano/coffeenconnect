@@ -8,13 +8,20 @@ class UserProfile(models.Model):
         ("mentee", "Mentee"),
     ]
 
+    FIELD_CHOICES = [
+        ("Psychology", "Psychology"),
+        ("Medical", "Medical"),
+        ("Technology", "Technology"),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
-    interested_field = models.CharField(max_length=120)
+    interested_field = models.CharField(max_length=50, choices=FIELD_CHOICES)
 
     def __str__(self):
         return f"{self.user.email} ({self.role})"
+
 
 
 class Mentor(models.Model):
@@ -24,7 +31,6 @@ class Mentor(models.Model):
 
     profile_text = models.TextField()
     embedding = models.JSONField(null=True, blank=True)
-    interested_field = models.CharField(max_length=120)
 
     linkedin = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
