@@ -5,6 +5,7 @@ AI-powered mentor–mentee matching platform
 CoffeeNConnect connects mentees with the right mentors using AI-driven semantic matching and interest-based filtering.
 Instead of browsing random profiles, users get ranked, personalized mentor matches.
 
+------------------------------------------------------------------------------------------------------------------------
 
 🌟 Why CoffeeNConnect?
 
@@ -17,6 +18,8 @@ Feature	Benefit
 👥 Mentor & Mentee dashboards	Clean, professional UX
 📄 CV + profile system	Better credibility & matching
 🔐 Secure login & roles	Mentor and Mentee flows separated
+
+-------------------------------------------------------------------------------------------------------------------------
 
 🧠 How Matching Works
 
@@ -40,64 +43,40 @@ We generate vector embeddings from profile descriptions using:
 
 SentenceTransformer: all-MiniLM-L6-v2
 
-
 We then compute similarity using cosine similarity:
-
 Similarity(mentee, mentor) = cosine(mentee_embedding, mentor_embedding)
-
-
 This allows us to match users based on:
 
-Goals
-
-Experience
-
-Learning intent
-—not just keywords.
+-------------------------------------------------------------------------------------------------------------------------
 
 
 🧭 User Flow
 🧑‍🎓 Mentee Journey
 
 Register
-
 Choose Interested Field
-
 Upload CV + Profile
-
 See ranked mentor matches
-
 Send mentorship requests
 
 🧑‍🏫 Mentor Journey
 
 Register
-
 Choose Interested Field
-
 Add experience & CV
-
 Receive mentee requests
-
 Accept / Reject
 
 🖥️ Dashboards
 Mentee Dashboard
 
 Profile card (photo, name, country)
-
 Ranked mentor matches
-
 Match percentage
-
 Request button
-
 Mentor Dashboard
-
 Incoming mentee requests
-
 Accept / Reject controls
-
 Mentor profile
 
 🛠️ Tech Stack
@@ -110,9 +89,10 @@ Vector Math	NumPy
 Auth	Django Auth
 File Storage	Django Media
 
+--------------------------------------------------------------------------------------------------------------------------------
+
 🚀 Getting Started
-1️⃣ Clone the project
-git clone https://github.com/yourusername/coffeenconnect.git
+1️⃣ Clone the project git clone https://github.com/yourusername/coffeenconnect.git
 cd coffeenconnect
 
 2️⃣ Create virtual environment
@@ -128,19 +108,14 @@ python manage.py migrate
 5️⃣ Start server
 python manage.py runserver
 
-
-Open:
-
-http://127.0.0.1:8000
+-------------------------------------------------------------------------------------------------------------------------------
 
 🧪 Sample Accounts
 
 You can create:
 
 Mentor accounts
-
 Mentee accounts
-
 Select the Interested Field during signup to enable matching.
 
 🧠 AI Engine
@@ -148,40 +123,23 @@ Select the Interested Field during signup to enable matching.
 We use:
 
 SentenceTransformer("all-MiniLM-L6-v2")
-
-
 Each profile is embedded and stored in the database as a vector.
-
 Matching is instant and scalable.
-
-
 
 🧑‍💻 Built By
 
 CoffeeNConnect is built as an AI-first mentorship platform.
-
 This project demonstrates:
-
 AI matching
-
 Multi-role SaaS design
-
 Real-world data modeling
-
 Production-ready architecture
-
-
 
 ⭐ Future Roadmap
 
 Chat between mentors & mentees
-
 Session booking
-
 Stripe payments
-
 Video calls
-
 Reputation system
-
 Admin analytics
