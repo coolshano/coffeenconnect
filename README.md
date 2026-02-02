@@ -50,25 +50,6 @@ AI	SentenceTransformers, NumPy
 Database	SQLite
 Auth	Django Auth
 Media	Django File Uploads
-📁 Project Structure
-connectmeproject/
-├── core/
-│   ├── models.py
-│   ├── views.py
-│   ├── ml.py
-│   ├── forms.py
-│   ├── urls.py
-│   └── templates/
-│       ├── register.html
-│       ├── mentee_dashboard.html
-│       ├── mentor_dashboard.html
-│       ├── mentee_profile.html
-│       ├── mentor_profile.html
-│       └── password_change.html
-├── media/
-├── static/
-├── manage.py
-└── README.md
 
 ⚙️ Installation
 1️⃣ Clone the project
