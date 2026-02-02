@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from .views import register, UserLoginView, dashboard, mentor_profile, mentee_profile, test_match, matches, request_mentor, mentee_dashboard
 from .views import (
     mentor_dashboard,
@@ -23,5 +24,17 @@ urlpatterns = [
     path("mentee/dashboard/", mentee_dashboard, name="mentee_dashboard"),
     path("logout/", LogoutView.as_view(next_page="/login/"), name="logout"),
 
+    #password reset 
 
-]
+    path("password-change/", auth_views.PasswordChangeView.as_view(
+            template_name="accounts/change_password.html",
+            success_url="/mentee/dashboard/"
+        ), name="password_change"),
+
+    path("password-change/done/", auth_views.PasswordChangeDoneView.as_view(
+            template_name="accounts/password_change_done.html"
+        ), name="password_change_done"),
+    ]
+
+
+

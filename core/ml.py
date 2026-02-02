@@ -17,7 +17,7 @@ def cosine_similarity(a, b):
 
     return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
 
- # ensure this is imported
+
 
 def match_mentors(mentee):
     field = mentee.user.userprofile.interested_field
