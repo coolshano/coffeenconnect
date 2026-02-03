@@ -6,138 +6,199 @@
 
 <style>
 body {
-    font-family: "Segoe UI", system-ui;
-    background: #f4f6f9;
-    margin: 0;
+    font-family:"Segoe UI",system-ui;
+    background:#f4f6f9;
+    margin:0;
 }
 
-.container {
-    max-width: 1100px;
-    margin: auto;
-    padding: 40px 20px;
+.layout {
+    display:grid;
+    grid-template-columns:300px 1fr;
+    max-width:1200px;
+    margin:auto;
+    gap:30px;
+    padding:40px;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-}
-
+/* LEFT PANEL */
 .profile {
-    display: flex;
-    gap: 20px;
-    align-items: center;
+    background:white;
+    border-radius:18px;
+    padding:30px;
+    box-shadow:0 10px 35px rgba(0,0,0,0.08);
+    text-align:center;
 }
 
 .profile img {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-bottom:12px;
 }
 
 .profile h2 {
-    margin: 0;
+    margin:10px 0 2px;
+    font-size:24px;
 }
 
-.edit-btn {
+.profile h4 {
+    margin:0;
+    color:#666;
+    font-weight:600;
+}
+
+.profile-btn {
+    width: 100%;
+    padding: 7px 0;          /* Height */
+    margin-top: 12px;
+    border-radius: 10px;
+    font-size: 16px;          /* Text size */
+    font-weight: 600;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    display: block;
+}
+
+.profile-btn.edit {
     background: #0d6efd;
     color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    cursor: pointer;
 }
 
-.section {
-    background: white;
-    padding: 30px;
-    border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-}
-
-.request-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #eee;
-    padding: 20px 0;
-}
-
-.request-card:last-child {
-    border-bottom: none;
-}
-
-.actions button {
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.accept {
-    background: #28a745;
-    color: white;
-}
-
-.reject {
+.profile-btn.logout {
     background: #dc3545;
     color: white;
 }
+
+.profile-btn.password {
+    background: #6c757d;
+    color: white;
+}
+
+.matches h1 {
+    margin-bottom:25px;
+    font-size:28px;
+}
+
+/* Request cards */
+.card {
+    background:white;
+    border-radius:16px;
+    padding:22px 26px;
+    margin-bottom:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    display:grid;
+    grid-template-columns:1fr 160px;
+    align-items:center;
+}
+
+.card h3 { margin:0;color:#0d6efd;}
+.card p { margin-top:6px;color:#444;}
+
+.btn {
+    padding:12px 18px;
+    border:none;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Smaller buttons */
+.accept-btn,
+.reject-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+    border-radius: 6px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
+
+/* Colors */
+.accept-btn {
+    background: #16a34a;
+    color: white;
+}
+
+.reject-btn {
+    background: #dc2626;
+    color: white;
+}
+
+.accept-btn:hover {
+    background: #15803d;
+}
+
+.reject-btn:hover {
+    background: #b91c1c;
+}
+
+
+.accept { background:#28a745;color:white;}
+.reject { background:#dc3545;color:white;}
 </style>
 </head>
+
 <body>
 
-<div class="container">
+<div class="layout">
 
-<!-- Mentor Profile -->
-<div class="header">
-    <div class="profile">
-        {% if mentor.profile_image %}
-            <img src="{{ mentor.profile_image.url }}">
-        {% else %}
-            <img src="{% static 'core/images/default-avatar.png' %}">
-        {% endif %}
-        <div>
-            <h2>{{ mentor.name }}</h2>
-            <p>Mentor</p>
-        </div>
-    </div>
+<!-- LEFT -->
+<div class="profile">
+    {% if mentor.profile_image %}
+        <img src="{{ mentor.profile_image.url }}">
+    {% else %}
+        <img src="{% static 'core/images/default-avatar.png' %}">
+    {% endif %}
 
-    <a href="/mentor/profile/">
-        <button class="edit-btn">Edit Profile</button>
+    <h2>{{ mentor.name }}</h2>
+    <h4>{{ mentor.country }}</h4>
+
+    <a href="/mentor/profile/" class="profile-btn edit">Edit Profile</a>
+
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button class="profile-btn logout">Logout</button>
+    </form>
+
+    <a href="{% url 'password_change' %}" class="profile-btn password">
+        Change Password
     </a>
 </div>
 
-<!-- Requests -->
-<div class="section">
-<h3>Mentorship Requests</h3>
+<!-- RIGHT -->
+<div class="matches">
+    <h1>Mentee Requests</h1>
 
-{% for r in requests %}
-<div class="request-card">
-    <div>
-        <b>{{ r.mentee.user.email }}</b><br>
-        {{ r.mentee.profile_text|truncatewords:20 }}
+    {% for r in requests %}
+    <div class="card">
+        <div>
+            <h3>{{ r.mentee.name }}</h3>
+            <p>{{ r.mentee.profile_text|truncatewords:15 }}</p>
+        </div>
+
+        <div class="action-buttons">
+            <form method="post" action="{% url 'accept_request' r.id %}">
+                {% csrf_token %}
+                <button class="accept-btn">Accept</button>
+            </form>
+
+            <form method="post" action="{% url 'reject_request' r.id %}">
+                {% csrf_token %}
+                <button class="reject-btn">Reject</button>
+            </form>
+        </div>
     </div>
-
-    <div class="actions">
-        <form method="post" action="/accept-request/{{ r.id }}/">
-            {% csrf_token %}
-            <button class="accept">Accept</button>
-        </form>
-
-        <form method="post" action="/reject-request/{{ r.id }}/">
-            {% csrf_token %}
-            <button class="reject">Reject</button>
-        </form>
-    </div>
-</div>
-{% empty %}
-<p>No mentorship requests yet.</p>
-{% endfor %}
-
+    {% empty %}
+        <p>No requests yet.</p>
+    {% endfor %}
 </div>
 
 </div>

@@ -77,6 +77,7 @@ class MentorProfileForm(forms.ModelForm):
         model = Mentor
         fields = [
             "name",
+            "country",
             "profile_text",
             "profile_image",
             "linkedin",
@@ -89,6 +90,11 @@ class MentorProfileForm(forms.ModelForm):
                 "placeholder": "Your full name",
                 "class": "input"
             }),
+
+            "country": forms.TextInput(attrs={
+                "placeholder": "Your country"
+            }),
+
             "profile_text": forms.Textarea(attrs={
                 "placeholder": "Describe your experience, skills, and what you can mentor...",
                 "rows": 6,

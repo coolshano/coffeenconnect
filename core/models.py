@@ -31,7 +31,7 @@ class Mentor(models.Model):
 
     profile_text = models.TextField()
     embedding = models.JSONField(null=True, blank=True)
-
+    country = models.CharField(max_length=80)
     linkedin = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
     cv = models.FileField(upload_to="cvs/", blank=True, null=True)

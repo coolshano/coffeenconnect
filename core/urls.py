@@ -34,6 +34,14 @@ urlpatterns = [
     path("password-change/done/", auth_views.PasswordChangeDoneView.as_view(
             template_name="accounts/password_change_done.html"
         ), name="password_change_done"),
+
+    #Accept and reject
+    path("mentor/request/<int:request_id>/accept/", accept_request, name="accept_request"),
+    path("mentor/request/<int:request_id>/reject/", reject_request, name="reject_request"),
+
+
+
+
     ]
 
 

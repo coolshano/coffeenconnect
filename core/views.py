@@ -9,6 +9,7 @@ from .ml import match_mentors
 from .forms import MentorProfileForm, MenteeProfileForm
 from .models import UserProfile, Mentor, Mentee, MentorRequest
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect
 
 
 @login_required(login_url="/login/")
@@ -144,20 +145,21 @@ def request_mentor(request, mentor_id):
         mentor=mentor
     )
 
-    return redirect("/matches/")
+    return redirect("/mentee/dashboard/")
 
-@login_required(login_url="/login/")
+@login_required
 def accept_request(request, request_id):
-    r = MentorRequest.objects.get(id=request_id)
-    r.status = "accepted"
-    r.save()
+    req = get_object_or_404(MentorRequest, id=request_id, mentor=request.user.mentor)
+    req.status = "accepted"
+    req.save()
     return redirect("/mentor/dashboard/")
 
-@login_required(login_url="/login/")
+
+@login_required
 def reject_request(request, request_id):
-    r = MentorRequest.objects.get(id=request_id)
-    r.status = "rejected"
-    r.save()
+    req = get_object_or_404(MentorRequest, id=request_id, mentor=request.user.mentor)
+    req.status = "rejected"
+    req.save()
     return redirect("/mentor/dashboard/")
 
 @login_required(login_url="/login/")
