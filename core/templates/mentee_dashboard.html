@@ -7,18 +7,45 @@
 <style>
 body {
     font-family: "Segoe UI", system-ui;
-    background:#f4f6f9;
-    margin:0;
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0d6efd, #ff9800);
 }
 
-/* Layout */
+/* HEADER */
+.app-header {
+    height: 70px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0d6efd;
+}
+
+.header-user {
+    font-weight: 600;
+    color: #444;
+}
+
+/* GLASS LAYOUT */
 .layout {
     display:grid;
     grid-template-columns: 300px 1fr;
     max-width:1200px;
-    margin:auto;
+    margin:40px auto;
     gap:30px;
     padding:40px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
 }
 
 /* LEFT PANEL */
@@ -64,21 +91,9 @@ body {
     cursor:pointer;
 }
 
-/* Button colors */
-.profile-btn.edit {
-    background:#0d6efd;
-    color:white;
-}
-
-.profile-btn.logout {
-    background:#dc3545;
-    color:white;
-}
-
-.profile-btn.password {
-    background:#6c757d;
-    color:white;
-}
+.profile-btn.edit { background:#0d6efd; color:white; }
+.profile-btn.logout { background:#dc3545; color:white; }
+.profile-btn.password { background:#6c757d; color:white; }
 
 .profile-btn.edit:hover { background:#0b5ed7; }
 .profile-btn.logout:hover { background:#bb2d3b; }
@@ -145,16 +160,44 @@ body {
 
 .pending { background:#ffc107; color:black; }
 .accepted { background:#0d6efd; }
+
+/* FOOTER */
+.app-footer {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    padding:25px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:#666;
+    font-size:14px;
+    box-shadow:0 -5px 20px rgba(0,0,0,0.1);
+}
+
+.footer-links a {
+    margin-left:20px;
+    text-decoration:none;
+    color:#0d6efd;
+    font-weight:600;
+}
+.footer-links a:hover {
+    text-decoration:underline;
+}
 </style>
 </head>
 
 <body>
 
+<!-- HEADER -->
+<div class="app-header">
+    <div class="logo">ConnectMe</div>
+</div>
+
+<!-- MAIN -->
 <div class="layout">
 
 <!-- LEFT PROFILE -->
 <div class="profile">
-
     {% if mentee.profile_image %}
         <img src="{{ mentee.profile_image.url }}">
     {% else %}
@@ -174,7 +217,6 @@ body {
     <a href="{% url 'password_change' %}" class="profile-btn password">
         Change Password
     </a>
-
 </div>
 
 <!-- RIGHT MATCHES -->
@@ -208,9 +250,18 @@ body {
     {% empty %}
         <p>No mentors found yet.</p>
     {% endfor %}
+</div>
 
 </div>
 
+<!-- FOOTER -->
+<div class="app-footer">
+    <div>© 2026 ConnectMe · All rights reserved</div>
+    <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Support</a>
+    </div>
 </div>
 
 </body>

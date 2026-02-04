@@ -2,127 +2,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Create Account | Conect Me</title>
+<meta charset="UTF-8">
+<title>Create Account | Connect Me</title>
 
-    <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            font-family: "Segoe UI", system-ui, sans-serif;
-            background: linear-gradient(135deg, #0d6efd, #ff9800);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+<style>
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: linear-gradient(135deg, #0d6efd, #ff9800);
+    display: flex;
+    flex-direction: column;
+}
 
-        .login-card {
-            background: #ffffff;
-            width: 420px;
-            padding: 32px;
-            border-radius: 14px;
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
-            text-align: center;
-        }
+/* HEADER */
+.app-header {
+    height: 70px;
+    background: rgba(255,255,255,0.95);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
 
-        .login-card img {
-            width: 160px;
-            max-width: 100%;
-            margin-bottom: 12px;
-        }
+.logo {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0d6efd;
+}
 
-        h2 {
-            margin-bottom: 22px;
-            color: #333;
-            font-weight: 600;
-        }
+/* MAIN AREA */
+.main-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 14px;
-            box-sizing: border-box;
-            background: #fff;
-        }
+/* REGISTER CARD */
+.login-card {
+    background: #ffffff;
+    width: 420px;
+    padding: 32px;
+    border-radius: 14px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+    text-align: center;
+}
 
-        input:focus, select:focus {
-            outline: none;
-            border-color: #0d6efd;
-        }
+.login-card img {
+    width: 160px;
+    margin-bottom: 12px;
+}
 
-        select {
-            cursor: pointer;
-        }
+h2 {
+    margin-bottom: 22px;
+    color: #333;
+    font-weight: 600;
+}
 
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 18px;
-            border: none;
-            border-radius: 8px;
-            background: #0d6efd;
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
 
-        button:hover {
-            background: #0b5ed7;
-        }
+input:focus, select:focus {
+    outline: none;
+    border-color: #0d6efd;
+}
 
-        .footer-text {
-            margin-top: 18px;
-            font-size: 13px;
-            color: #777;
-        }
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 18px;
+    border: none;
+    border-radius: 8px;
+    background: #0d6efd;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
 
-        @media (max-width: 480px) {
-            .login-card {
-                width: 90%;
-                padding: 24px;
-            }
-        }
-    </style>
+button:hover {
+    background: #0b5ed7;
+}
+
+/* FOOTER */
+.app-footer {
+    background: rgba(255,255,255,0.95);
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.footer-links a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        width: 90%;
+        padding: 24px;
+    }
+}
+</style>
 </head>
+
 <body>
 
-<div class="login-card">
-    <img src="{% static 'core/images/logo.png' %}" alt="Conect Me Logo">
+<!-- HEADER -->
+<div class="app-header">
+    <div class="logo">ConnectMe</div>
+</div>
 
-    <h2>Create Account</h2>
+<!-- MAIN CONTENT -->
+<div class="main-content">
+    <div class="login-card">
+        <img src="{% static 'core/images/logo.png' %}" alt="Connect Me Logo">
 
-    <form method="post">
-        {% csrf_token %}
+        <h2>Create Account</h2>
 
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="text" name="phone_number" placeholder="Phone Number" required>
+        <form method="post">
+            {% csrf_token %}
 
-        <select name="role" required>
-            <option value="">Register as...</option>
-            <option value="mentee">Mentee</option>
-            <option value="mentor">Mentor</option>
-        </select>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="text" name="phone_number" placeholder="Phone Number" required>
 
-        <select name="interested_field" required>
-            <option value="">Select your interest...</option>
-            <option value="psychology">Psychology</option>
-            <option value="medical">Medical</option>
-            <option value="technology">Technology</option>
-        </select>
+            <select name="role" required>
+                <option value="">Register as...</option>
+                <option value="mentee">Mentee</option>
+                <option value="mentor">Mentor</option>
+            </select>
 
-        <input type="password" name="password1" placeholder="Password" required>
-        <input type="password" name="password2" placeholder="Confirm Password" required>
+            <select name="interested_field" required>
+                <option value="">Select your interest...</option>
+                <option value="psychology">Psychology</option>
+                <option value="medical">Medical</option>
+                <option value="technology">Technology</option>
+            </select>
 
-        <button type="submit">Create Account</button>
-    </form>
+            <input type="password" name="password1" placeholder="Password" required>
+            <input type="password" name="password2" placeholder="Confirm Password" required>
 
-    <div class="footer-text">
-        Join Professionals & Opportunities
+            <button type="submit">Create Account</button>
+        </form>
+        <div style="margin-top:18px; font-size:14px;">
+            Already have an account?
+            <a href="{% url 'login' %}" style="color:#0d6efd; font-weight:600; text-decoration:none;">
+                Login
+    </a>
+</div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div class="app-footer">
+    <div>© 2026 ConnectMe · All rights reserved</div>
+    <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Support</a>
     </div>
 </div>
 
