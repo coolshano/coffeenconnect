@@ -2,32 +2,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Mentor Profile</title>
+<title>Mentor Profile | ConnectMe</title>
 
 <style>
+/* ===== Base ===== */
 body {
-    font-family: "Segoe UI", system-ui;
-    background: #f4f6f9;
     margin: 0;
+    font-family: "Segoe UI", system-ui;
+    background: linear-gradient(135deg, #0d6efd, #ff9800);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
+/* ===== Header ===== */
+.header {
+    background: white;
+    padding: 14px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0d6efd;
+}
+
+.user-email {
+    color: #444;
+    font-weight: 600;
+}
+
+/* ===== Layout ===== */
 .container {
-    max-width: 800px;
+    flex: 1;
+    max-width: 900px;
     margin: auto;
-    padding: 40px 20px;
+    padding: 60px 20px;
 }
 
 .card {
     background: white;
-    border-radius: 14px;
-    padding: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-radius: 18px;
+    padding: 40px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
 }
 
+/* ===== Profile Header ===== */
 .profile-header {
     display: flex;
-    gap: 20px;
+    gap: 25px;
     align-items: center;
+    margin-bottom: 30px;
 }
 
 .profile-header img {
@@ -35,51 +64,103 @@ body {
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
+    border: 4px solid #0d6efd30;
 }
 
 .profile-header h2 {
     margin: 0;
+    font-size: 28px;
 }
 
+.profile-header p {
+    margin-top: 6px;
+    color: #777;
+    font-weight: 600;
+}
+
+/* ===== Form ===== */
 label {
     display: block;
     font-weight: 600;
-    margin-top: 15px;
+    margin-top: 22px;
 }
 
-input, textarea {
+input, textarea, select {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-top: 6px;
-    border-radius: 8px;
+    border-radius: 10px;
     border: 1px solid #ddd;
+    font-size: 14px;
 }
 
-button {
-    margin-top: 20px;
-    background: #0d6efd;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
+textarea {
+    min-height: 130px;
 }
 
-.change-password {
-    margin-top: 20px;
+/* ===== CV Link ===== */
+.cv-link {
     display: block;
-    text-align: center;
+    margin-top: 8px;
     color: #0d6efd;
     font-weight: 600;
 }
+
+/* ===== Save Button ===== */
+button {
+    margin-top: 30px;
+    width: 100%;
+    background: linear-gradient(135deg, #0d6efd, #0046d5);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+button:hover {
+    opacity: 0.95;
+}
+
+/* ===== Footer ===== */
+.footer {
+    background: white;
+    padding: 16px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.footer-links a {
+    margin-left: 20px;
+    color: #0d6efd;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
 </style>
 </head>
+
 <body>
 
+<!-- ===== HEADER ===== -->
+<div class="header">
+    <div class="logo">ConnectMe</div>
+    <div class="user-email">{{ request.user.email }}</div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
 <div class="container">
 <div class="card">
 
+<!-- Profile Header -->
 <div class="profile-header">
     {% if form.instance.profile_image %}
         <img src="{{ form.instance.profile_image.url }}">
@@ -87,32 +168,26 @@ button {
         <img src="{% static 'core/images/default-avatar.png' %}">
     {% endif %}
     <div>
-        <h2>{{ request.instance.name }}</h2>
+        <h2>{{ form.instance.name }}</h2>
         <p>Mentor</p>
     </div>
 </div>
 
+<!-- Form -->
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
     <label>Full Name</label>
     {{ form.name }}
 
-     <label>Country</label>
+    <label>Country</label>
     {{ form.country }}
 
     <label>About You</label>
     {{ form.profile_text }}
 
-    <label>Interested Field</label>
-    {{ form.interested_field }}
-
-
     <label>Profile Photo</label>
-    {% if form.instance.profile_image %}
-        <img src="{{ form.instance.profile_image.url }}" style="width:90px;height:90px;border-radius:50%;margin-bottom:10px;">
-    {% endif %}
-    <input type="file" name="profile_image">
+    {{ form.profile_image }}
 
     <label>LinkedIn</label>
     {{ form.linkedin }}
@@ -122,17 +197,26 @@ button {
 
     <label>CV</label>
     {% if form.instance.cv %}
-        <a href="{{ form.instance.cv.url }}" target="_blank" style="color:#0d6efd;font-weight:600;display:block;margin-bottom:8px;">
+        <a href="{{ form.instance.cv.url }}" target="_blank" class="cv-link">
             View current CV
         </a>
     {% endif %}
-    <input type="file" name="cv">
+    {{ form.cv }}
 
     <button type="submit">Save Profile</button>
 </form>
 
-
 </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+    <div>© 2026 ConnectMe. All rights reserved</div>
+    <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Support</a>
+    </div>
 </div>
 
 </body>

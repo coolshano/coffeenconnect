@@ -10,7 +10,8 @@ from .forms import MentorProfileForm, MenteeProfileForm
 from .models import UserProfile, Mentor, Mentee, MentorRequest
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
-
+from django.core.paginator import Paginator
+from django.shortcuts import render
 
 @login_required(login_url="/login/")
 def test_match(request):

@@ -5,11 +5,16 @@
 <title>Mentee Dashboard</title>
 
 <style>
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
 body {
     font-family: "Segoe UI", system-ui;
-    margin: 0;
-    min-height: 100vh;
     background: linear-gradient(135deg, #0d6efd, #ff9800);
+    display: flex;
+    flex-direction: column;
 }
 
 /* HEADER */
@@ -18,7 +23,6 @@ body {
     background: rgba(255,255,255,0.95);
     backdrop-filter: blur(10px);
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 0 40px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.1);
@@ -30,19 +34,23 @@ body {
     color: #0d6efd;
 }
 
-.header-user {
-    font-weight: 600;
-    color: #444;
+/* MAIN */
+.app-main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    padding: 40px 0;
 }
 
 /* GLASS LAYOUT */
 .layout {
-    display:grid;
+    display: grid;
     grid-template-columns: 300px 1fr;
-    max-width:1200px;
-    margin:40px auto;
-    gap:30px;
-    padding:40px;
+    width: 100%;
+    max-width: 1200px;
+    gap: 30px;
+    padding: 40px;
     background: rgba(255,255,255,0.95);
     border-radius: 20px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.15);
@@ -54,6 +62,8 @@ body {
     border-radius:18px;
     padding:30px;
     box-shadow:0 10px 35px rgba(0,0,0,0.08);
+    display:flex;
+    flex-direction:column;
     text-align:center;
 }
 
@@ -73,39 +83,51 @@ body {
 .profile h4 {
     margin:0;
     color:#666;
-    font-weight:600;
 }
 
-/* Unified buttons */
+/* bottom buttons */
+.profile-actions {
+    margin-top:auto;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
 .profile-btn {
-    display:block;
     width:100%;
     padding:14px 0;
-    margin-top:14px;
     border-radius:10px;
     font-weight:600;
-    font-size:16px;
-    text-align:center;
-    text-decoration:none;
     border:none;
     cursor:pointer;
+    text-decoration:none;
+    text-align:center;
 }
 
 .profile-btn.edit { background:#0d6efd; color:white; }
 .profile-btn.logout { background:#dc3545; color:white; }
 .profile-btn.password { background:#6c757d; color:white; }
 
-.profile-btn.edit:hover { background:#0b5ed7; }
-.profile-btn.logout:hover { background:#bb2d3b; }
-.profile-btn.password:hover { background:#5c636a; }
-
 /* RIGHT PANEL */
-.matches h1 {
-    margin-bottom:25px;
-    font-size:28px;
+.matches {
+    display:flex;
+    flex-direction:column;
+    height:100%;
 }
 
-/* Mentor Cards */
+.matches h1 {
+    flex-shrink:0;
+    margin-bottom:20px;
+}
+
+/* Scrollable list */
+.matches-list {
+    flex:1;
+    overflow-y:auto;
+    padding-right:10px;
+}
+
+/* Mentor cards */
 .card {
     background:white;
     border-radius:16px;
@@ -118,151 +140,154 @@ body {
     gap:20px;
 }
 
-/* Mentor Info */
 .mentor h3 {
     margin:0;
     color:#0d6efd;
-    font-size:18px;
-    font-weight:700;
 }
 
 .mentor p {
     margin-top:6px;
     font-size:14px;
     color:#444;
-    line-height:1.5;
 }
 
-/* Score */
 .score {
-    text-align:center;
     font-size:20px;
     font-weight:800;
     color:#16a34a;
+    text-align:center;
 }
 
-/* Right aligned action */
 .card-actions {
     display:flex;
     justify-content:flex-end;
 }
 
-/* Match Buttons */
 .btn {
-    background:#28a745;
-    color:white;
-    border:none;
     padding:12px 22px;
     border-radius:10px;
-    cursor:pointer;
+    border:none;
     font-weight:600;
+    cursor:pointer;
 }
 
-.pending { background:#ffc107; color:black; }
-.accepted { background:#0d6efd; }
+.pending { background:#ffc107; }
+.accepted { background:#0d6efd; color:white; }
 
 /* FOOTER */
 .app-footer {
     background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(10px);
     padding:25px 40px;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    color:#666;
-    font-size:14px;
     box-shadow:0 -5px 20px rgba(0,0,0,0.1);
-}
-
-.footer-links a {
-    margin-left:20px;
-    text-decoration:none;
-    color:#0d6efd;
-    font-weight:600;
-}
-.footer-links a:hover {
-    text-decoration:underline;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="app-header">
     <div class="logo">ConnectMe</div>
 </div>
 
-<!-- MAIN -->
-<div class="layout">
+<div class="app-main">
+    <div class="layout">
 
-<!-- LEFT PROFILE -->
-<div class="profile">
-    {% if mentee.profile_image %}
-        <img src="{{ mentee.profile_image.url }}">
-    {% else %}
-        <img src="{% static 'core/images/default-avatar.png' %}">
-    {% endif %}
+        <!-- LEFT -->
+        <div class="profile">
+            {% if mentee.profile_image %}
+                <img src="{{ mentee.profile_image.url }}">
+            {% else %}
+                <img src="{% static 'core/images/default-avatar.png' %}">
+            {% endif %}
 
-    <h2>{{ mentee.name }}</h2>
-    <h4>{{ mentee.country }}</h4>
+            <h2>{{ mentee.name }}</h2>
+            <h4>{{ mentee.country }}</h4>
 
-    <a href="/mentee/profile/" class="profile-btn edit">Edit Profile</a>
+            <div class="profile-actions">
+                <a href="/mentee/profile/" class="profile-btn edit">Edit Profile</a>
 
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button class="profile-btn logout">Logout</button>
-    </form>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="profile-btn logout">Logout</button>
+                </form>
 
-    <a href="{% url 'password_change' %}" class="profile-btn password">
-        Change Password
-    </a>
-</div>
-
-<!-- RIGHT MATCHES -->
-<div class="matches">
-    <h1>Your Mentor Matches</h1>
-
-    {% for m in mentors %}
-    <div class="card">
-
-        <div class="mentor">
-            <h3>{{ m.mentor.name }}</h3>
-            <p>{{ m.mentor.profile_text|truncatewords:18 }}</p>
+                <a href="{% url 'password_change' %}" class="profile-btn password">
+                    Change Password
+                </a>
+            </div>
         </div>
 
-        <div class="score">{{ m.score }}%</div>
+        <!-- RIGHT -->
+        <div class="matches">
+            <h2>Your Mentor Matches</h2>
 
-        <div class="card-actions">
-            {% if m.status == "pending" %}
-                <button class="btn pending">Pending</button>
-            {% elif m.status == "accepted" %}
-                <button class="btn accepted">Connected</button>
-            {% else %}
-                <form method="post" action="{% url 'request_mentor' m.mentor.id %}">
-                    {% csrf_token %}
-                    <button class="btn">Request</button>
-                </form>
-            {% endif %}
+            <div class="matches-list" id="matches-list">
+                {% for m in mentors|slice:":3" %}
+                <div class="card">
+                    <div class="mentor">
+                        <h3>{{ m.mentor.name }}</h3>
+                        <h4>{{ m.mentor.country }}</h4>
+                        <p>{{ m.mentor.profile_text|truncatewords:18 }}</p>
+                    </div>
+
+                    <div class="score">{{ m.score }}%</div>
+
+                    <div class="card-actions">
+                        {% if m.status == "pending" %}
+                            <button class="btn pending">Pending</button>
+                        {% elif m.status == "accepted" %}
+                            <button class="btn accepted">Connected</button>
+                        {% else %}
+                            <form method="post" action="{% url 'request_mentor' m.mentor.id %}">
+                                {% csrf_token %}
+                                <button class="btn">Request</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
 
     </div>
-    {% empty %}
-        <p>No mentors found yet.</p>
-    {% endfor %}
 </div>
 
-</div>
-
-<!-- FOOTER -->
 <div class="app-footer">
     <div>© 2026 ConnectMe · All rights reserved</div>
-    <div class="footer-links">
-        <a href="#">Privacy</a>
-        <a href="#">Terms</a>
-        <a href="#">Support</a>
-    </div>
+    <div>Privacy · Terms · Support</div>
 </div>
+
+<!-- Infinite Scroll Script -->
+<script>
+let page = 1;
+let loading = false;
+const list = document.getElementById("matches-list");
+
+list.addEventListener("scroll", () => {
+    if (loading) return;
+
+    if (list.scrollTop + list.clientHeight >= list.scrollHeight - 100) {
+        loadMore();
+    }
+});
+
+function loadMore() {
+    loading = true;
+    page++;
+
+    fetch(`/load-more-mentors/?page=${page}`)
+        .then(res => res.text())
+        .then(html => {
+            if (html.trim() !== "") {
+                list.insertAdjacentHTML("beforeend", html);
+            }
+            loading = false;
+        });
+}
+</script>
 
 </body>
 </html>

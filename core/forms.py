@@ -73,22 +73,17 @@ class RegisterForm(UserCreationForm):
 
 
 class MentorProfileForm(forms.ModelForm):
+
     class Meta:
         model = Mentor
         fields = [
-            "name",
-            "country",
-            "profile_text",
-            "profile_image",
-            "linkedin",
-            "github",
-            "cv",
+            "name", "country", "profile_text",
+            "profile_image", "linkedin", "github", "cv"
         ]
 
         widgets = {
             "name": forms.TextInput(attrs={
-                "placeholder": "Your full name",
-                "class": "input"
+                "placeholder": "Your full name"
             }),
 
             "country": forms.TextInput(attrs={
@@ -96,27 +91,30 @@ class MentorProfileForm(forms.ModelForm):
             }),
 
             "profile_text": forms.Textarea(attrs={
-                "placeholder": "Describe your experience, skills, and what you can mentor...",
-                "rows": 6,
-                "class": "textarea"
+                "placeholder": "Describe your background, goals, and what you want to learn...",
+                "rows": 6
             }),
+
+            # 🔥 This removes the URLs, Clear checkbox, etc
+            "profile_image": forms.FileInput(attrs={
+                "class": "file-input"
+            }),
+
+            "cv": forms.FileInput(attrs={
+                "class": "file-input"
+            }),
+
             "linkedin": forms.URLInput(attrs={
-                "placeholder": "LinkedIn profile URL (optional)",
-                "class": "input"
+                "placeholder": "LinkedIn profile (optional)"
             }),
+
             "github": forms.URLInput(attrs={
-                "placeholder": "GitHub profile URL (optional)",
-                "class": "input"
+                "placeholder": "GitHub profile (optional)"
             }),
-            "profile_image": forms.ClearableFileInput(attrs={
-                "class": "file-input",
-                "data-show-current": "false"
-            }),
-            "cv": forms.ClearableFileInput(attrs={
-                "class": "file-input",
-                "data-show-current": "false"
-            }),
-        }
+
+            }
+            
+
 
 class MenteeProfileForm(forms.ModelForm):
     class Meta:
