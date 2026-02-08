@@ -5,6 +5,7 @@ from .views import (
     mentor_dashboard,
     accept_request,
     reject_request,
+    verify_otp,
 )
 from django.contrib.auth.views import LogoutView
 
@@ -23,6 +24,7 @@ urlpatterns = [
     path("reject-request/<int:request_id>/", reject_request),
     path("mentee/dashboard/", mentee_dashboard, name="mentee_dashboard"),
     path("logout/", LogoutView.as_view(next_page="/login/"), name="logout"),
+    path('verify-otp/', verify_otp, name='verify_otp'),
 
     #password reset 
 

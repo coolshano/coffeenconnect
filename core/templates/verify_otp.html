@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify OTP</title>
+    <style>
+        body {
+            font-family: "Segoe UI", system-ui;
+            background: linear-gradient(135deg, #0d6efd, #6610f2);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .otp-box {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: #0d6efd;
+            color: white;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0b5ed7;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="otp-box">
+    <h2>Email Verification</h2>
+    <p>Enter the OTP sent to your email</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="otp" maxlength="6" placeholder="Enter OTP" required>
+        <button type="submit">Verify OTP</button>
+    </form>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+</div>
+
+</body>
+</html>

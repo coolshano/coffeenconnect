@@ -12,6 +12,8 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.shortcuts import render
+from django.core.mail import send_mail
+from .models import EmailOTP
 
 @login_required(login_url="/login/")
 def test_match(request):
@@ -26,18 +28,34 @@ def test_match(request):
 class UserLoginView(LoginView):
     template_name = "login.html"
 
-    def get_success_url(self):
-        user = self.request.user
+    def form_valid(self, form):
+        response = super().form_valid(form)
 
-        profile, _ = UserProfile.objects.get_or_create(
-            user=user,
-            defaults={"role": "mentee"}
-        )
+        send_email_otp(self.request.user)
+        self.request.session['mfa_verified'] = False
 
-        if profile.role == "mentor":
-            return "/mentor/dashboard/"
-        else:
-            return "/mentee/dashboard/"
+        return redirect('verify_otp')
+    
+
+def verify_otp(request):
+    if request.method == 'POST':
+        otp = request.POST.get('otp')
+        otp_obj = EmailOTP.objects.filter(user=request.user, otp=otp).first()
+
+        if otp_obj:
+            request.session['mfa_verified'] = True
+
+            profile, _ = UserProfile.objects.get_or_create(
+                user=request.user,
+                defaults={"role": "mentee"}
+            )
+
+            if profile.role == "mentor":
+                return redirect("/mentor/dashboard/")
+            else:
+                return redirect("/mentee/dashboard/")
+
+    return render(request, 'verify_otp.html')
 
 @login_required(login_url='/login/')
 def dashboard(request):
@@ -201,5 +219,16 @@ def mentee_dashboard(request):
         "mentors": mentors
     })
 
+
+def send_email_otp(user):
+    otp_obj, _ = EmailOTP.objects.get_or_create(user=user)
+    otp = otp_obj.generate_otp()
+
+    send_mail(
+        'Your Login OTP',
+        f'Your OTP is {otp}',
+        'yourgmail@gmail.com',
+        [user.email],
+    )
 
 
