@@ -69,12 +69,14 @@ def register(request):
 
             role = form.cleaned_data["role"]
             interested = form.cleaned_data["interested_field"]
+            education = form.cleaned_data["education"]
 
             # Update the auto-created profile
             UserProfile.objects.filter(user=user).update(
                 phone_number=form.cleaned_data["phone_number"],
                 role=role,
-                interested_field=interested
+                interested_field=interested,
+                education=education
             )
 
             login(request, user)

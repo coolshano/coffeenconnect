@@ -15,10 +15,18 @@ class UserProfile(models.Model):
         ("Technology", "Technology"),
     ]
 
+    Education_CHOICES = [
+        ("Diploma", "Diploma"),
+        ("Degree", "Degree"),
+        ("Masters", "Masters"),
+        ("PHD", "PHD"),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     interested_field = models.CharField(max_length=50, choices=FIELD_CHOICES)
+    education = models.CharField(max_length=50, choices=Education_CHOICES)
 
     def __str__(self):
         return f"{self.user.email} ({self.role})"

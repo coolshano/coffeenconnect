@@ -25,6 +25,13 @@ class RegisterForm(UserCreationForm):
         ("Technology", "Technology"),
     ]
 
+    Education_CHOICES = [
+        ("Diploma", "Diploma"),
+        ("Degree", "Degree"),
+        ("Masters", "Masters"),
+        ("PHD", "PHD"),
+    ]
+
     interested_field = forms.ChoiceField(choices=FIELD_CHOICES)
 
 
@@ -38,12 +45,15 @@ class RegisterForm(UserCreationForm):
 
     role = forms.ChoiceField(choices=ROLE_CHOICES)
 
+    education = forms.ChoiceField(choices=Education_CHOICES)
+
     class Meta:
         model = User
         fields = [
             "email",
             "phone_number",
             "interested_field",
+            "education",
             "role",
             "password1",
             "password2",
