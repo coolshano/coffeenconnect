@@ -14,6 +14,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render
 from django.core.mail import send_mail
 from .models import EmailOTP
+from django.conf import settings
 
 @login_required(login_url="/login/")
 def test_match(request):
@@ -199,6 +200,20 @@ def mentor_dashboard(request):
 
 
 @login_required
+def mentor_all_requests(request):
+    mentor = request.user.mentor
+
+    requests = MentorRequest.objects.filter(
+        mentor=mentor
+    ).select_related("mentee").order_by("-created_at")
+
+    return render(request, "mentor_all_requests.html", {
+        "mentor": mentor,
+        "requests": requests
+    })
+
+
+@login_required
 def mentee_dashboard(request):
     mentee, _ = Mentee.objects.get_or_create(user=request.user)
     # get ML matches
@@ -221,6 +236,19 @@ def mentee_dashboard(request):
         "mentors": mentors
     })
 
+@login_required
+def mentee_requests(request):
+    mentee = Mentee.objects.get(user=request.user)
+
+    requests = MentorRequest.objects.filter(
+        mentee=mentee
+    ).select_related("mentor", "mentor__user").order_by("-created_at")
+
+    return render(request, "mentee_requests.html", {
+        "mentee": mentee,
+        "requests": requests
+    })
+
 
 def send_email_otp(user):
     otp_obj, _ = EmailOTP.objects.get_or_create(user=user)
@@ -233,4 +261,66 @@ def send_email_otp(user):
         [user.email],
     )
 
+
+def accept_request(request, request_id):
+    mentor_request = get_object_or_404(MentorRequest, id=request_id)
+
+    mentor_request.status = "accepted"
+    mentor_request.save()
+
+    send_mail(
+        subject="Mentorship Request Accepted",
+        message=f"""
+Hi {mentor_request.mentee.name},
+
+Good news!
+
+Your mentorship request has been ACCEPTED by {mentor_request.mentor.name}.
+
+You can now start connecting through ConnectMe.
+""",
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[mentor_request.mentee.user.email],
+        fail_silently=False,
+    )
+
+    return redirect("mentor_dashboard")
+
+
+def reject_request(request, request_id):
+    mentor_request = get_object_or_404(MentorRequest, id=request_id)
+
+    mentor_request.status = "rejected"
+    mentor_request.save()
+
+    send_mail(
+        subject="Mentorship Request Update",
+        message=f"""
+Hi {mentor_request.mentee.name},
+
+Thank you for your interest.
+
+Unfortunately your mentorship request was not accepted this time.
+You may apply to other mentors anytime on ConnectMe.
+""",
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[mentor_request.mentee.user.email],
+        fail_silently=False,
+    )
+
+    return redirect("mentor_dashboard")
+
+
+@login_required
+def mentor_requests_tab(request):
+    mentor = request.user.mentor
+
+    requests = MentorRequest.objects.filter(
+        mentor=mentor
+    ).select_related("mentee").order_by("-created_at")
+
+    return render(request, "mentor_requests.html", {
+        "mentor": mentor,
+        "requests": requests
+    })
 

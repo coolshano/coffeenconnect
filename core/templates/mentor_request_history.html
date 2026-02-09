@@ -1,0 +1,11 @@
+<h1>All Mentee Requests</h1>
+
+{% for r in requests %}
+    <div class="card">
+        <h3>{{ r.mentee.name }}</h3>
+        <p>Status: {{ r.status }}</p>
+        <p>Requested: {{ r.created_at }}</p>
+    </div>
+{% empty %}
+    <p>No requests yet.</p>
+{% endfor %}

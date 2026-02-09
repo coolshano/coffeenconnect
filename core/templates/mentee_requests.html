@@ -1,0 +1,10 @@
+<h1>Your Mentorship Requests</h1>
+
+{% for r in requests %}
+    <div>
+        <h3>{{ r.mentor.name }}</h3>
+        <p>Status: {{ r.status }}</p>
+    </div>
+{% empty %}
+    <p>No requests yet.</p>
+{% endfor %}
